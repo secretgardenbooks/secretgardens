@@ -746,29 +746,6 @@ input, select, textarea { font-family: inherit; }
 .cart-header h2 { font-family: var(--font-serif); font-size: 1.3rem; margin: 0; color: var(--moon-white); }
 .cart-header .modal-close { position: static; }
 
-.cart-progress-wrap { padding: 0 20px 14px; }
-
-.cart-progress-track {
-  height: 6px;
-  border-radius: 999px;
-  background: rgba(255,255,255,0.08);
-  overflow: hidden;
-}
-
-.cart-progress-fill {
-  height: 100%;
-  width: 0%;
-  background: linear-gradient(90deg, var(--violet), var(--gold));
-  border-radius: 999px;
-  transition: width 0.5s ease;
-}
-
-.cart-progress-label {
-  font-size: 0.72rem;
-  color: var(--text-muted);
-  margin: 6px 0 0;
-}
-
 .cart-items {
   flex: 1;
   overflow-y: auto;
