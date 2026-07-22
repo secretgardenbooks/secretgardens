@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>The Secret Gardens Books</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Jost:wght@300;400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<!-- Fondo estrellado -->
+<canvas id="starfield"></canvas>
+<div class="noise-overlay"></div>
+
+<!-- HEADER -->
+<header class="site-header">
+  <div class="header-inner">
+    <img src="TU_URL_DEL_LOGO_AQUI" class="logo-img" alt="The Secret Gardens Books">
+    <h1 class="site-title">The Secret Gardens</h1>
+    <p class="site-tagline">un jardín de historias, abierto a la luz de la luna</p>
+    <div class="payment-info">
+      <span>Binance</span><span class="dot">•</span>
+      <span>Zelle</span><span class="dot">•</span>
+      <span>Zinli</span><span class="dot">•</span>
+      <span>Efectivo</span>
+    </div>
+  </div>
+</header>
+
+<!-- CARRUSEL TOP -->
+<section class="top-carousel-section">
+  <h2 class="section-label">Top más aclamados</h2>
+  <div class="top-carousel" id="topCarousel"></div>
+</section>
+
+<!-- CONTROLES -->
+<div class="controls-bar sticky">
+  <div class="search-wrap">
+    <input type="text" id="searchInput" placeholder="Buscar título o autor…" autocomplete="off">
+    <button id="clearSearch" class="clear-btn" aria-label="Limpiar búsqueda">×</button>
+  </div>
+  <div class="filters-row">
+    <select id="genreFilter" class="pill-select">
+      <option value="">Todos los géneros</option>
+    </select>
+    <select id="sortSelect" class="pill-select">
+      <option value="default">Ordenar</option>
+      <option value="price-asc">Precio: menor a mayor</option>
+      <option value="price-desc">Precio: mayor a menor</option>
+      <option value="title-asc">Título A–Z</option>
+    </select>
+    <label class="pill-checkbox">
+      <input type="checkbox" id="inStockFilter">
+      <span>Solo disponibles</span>
+    </label>
+  </div>
+</div>
+
+<!-- FAVORITOS -->
+<section class="favorites-section" id="favoritesSection" hidden>
+  <div class="favorites-header">
+    <h2 class="section-label">Tus favoritos</h2>
+    <button id="clearFavs" class="text-btn">Limpiar</button>
+  </div>
+  <div class="favorites-strip" id="favoritesStrip"></div>
+</section>
+
+<!-- GRID DE PRODUCTOS -->
+<main class="products-section">
+  <div class="products-grid" id="productsGrid"></div>
+  <p class="empty-state" id="emptyState" hidden>Ningún libro coincide con tu búsqueda entre estas estrellas.</p>
+</main>
+
+<!-- MODAL DE LIBRO -->
+<div class="modal-overlay" id="bookModalOverlay" hidden>
+  <div class="book-modal" id="bookModal">
+    <button class="modal-close" id="closeBookModal" aria-label="Cerrar">×</button>
+    <div class="modal-backdrop-img" id="modalBackdropImg"></div>
+    <div class="modal-content">
+      <div class="modal-img-wrap">
+        <img id="modalImg" src="" alt="">
+        <span class="cover-badge" id="modalCoverBadge"></span>
+      </div>
+      <div class="modal-info">
+        <h2 id="modalTitle"></h2>
+        <p class="modal-author" id="modalAuthor"></p>
+        <div class="modal-genres" id="modalGenres"></div>
+        <p class="modal-desc" id="modalDesc"></p>
+        <div class="modal-price-row">
+          <span class="modal-price" id="modalPrice"></span>
+          <span class="modal-original-price" id="modalOriginalPrice"></span>
+          <span class="discount-badge" id="modalDiscountBadge" hidden></span>
+        </div>
+        <div class="modal-actions">
+          <button class="btn btn-buy" id="modalBuyNow">Comprar ahora</button>
+          <button class="btn btn-cart" id="modalAddCart">Al carrito</button>
+          <button class="icon-btn share-btn" id="modalShare" aria-label="Compartir">⤴</button>
+        </div>
+      </div>
+      <div class="modal-suggestions">
+        <h3>También te puede gustar</h3>
+        <div class="suggestions-scroll" id="suggestionsScroll"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SIDEBAR CARRITO -->
+<div class="cart-overlay" id="cartOverlay" hidden></div>
+<aside class="cart-sidebar" id="cartSidebar">
+  <div class="cart-header">
+    <h2>Tu carrito</h2>
+    <button class="modal-close" id="closeCart" aria-label="Cerrar carrito">×</button>
+  </div>
+  <div class="cart-progress-wrap">
+    <div class="cart-progress-track">
+      <div class="cart-progress-fill" id="cartProgressFill"></div>
+    </div>
+    <p class="cart-progress-label" id="cartProgressLabel"></p>
+  </div>
+  <div class="cart-items" id="cartItems"></div>
+  <div class="cart-empty" id="cartEmpty">Tu carrito espera entre las páginas, aún vacío.</div>
+  <div class="cart-notes-wrap">
+    <label for="cartNotes">Notas para tu pedido</label>
+    <textarea id="cartNotes" placeholder="Ej: envolver para regalo, dirección, horario…"></textarea>
+  </div>
+  <div class="cart-footer">
+    <div class="cart-total-row">
+      <span>Total</span>
+      <span class="cart-total" id="cartTotal">$0.00</span>
+    </div>
+    <button class="btn btn-checkout" id="checkoutBtn" disabled>Finalizar Pedido</button>
+  </div>
+</aside>
+
+<!-- MODAL CONFIRMACIÓN -->
+<div class="modal-overlay" id="confirmModalOverlay" hidden>
+  <div class="confirm-modal">
+    <button class="modal-close" id="closeConfirmModal" aria-label="Cerrar">×</button>
+    <h2>Resumen de tu pedido</h2>
+    <div class="confirm-items" id="confirmItems"></div>
+    <div class="confirm-notes" id="confirmNotes"></div>
+    <div class="confirm-total-row">
+      <span>Total</span>
+      <span id="confirmTotal">$0.00</span>
+    </div>
+    <div class="confirm-actions">
+      <button class="btn btn-secondary" id="editOrderBtn">Editar</button>
+      <button class="btn btn-buy" id="sendOrderBtn">Enviar 🌿</button>
+    </div>
+  </div>
+</div>
+
+<!-- FAB CARRITO -->
+<button class="cart-fab" id="cartFab" aria-label="Abrir carrito">
+  🛒
+  <span class="cart-fab-badge" id="cartFabBadge" hidden>0</span>
+</button>
+
+<!-- BURBUJA SOCIAL -->
+<div class="social-bubble-wrap">
+  <button class="social-bubble" id="socialBubble" aria-label="Redes sociales">
+    <img src="TU_URL_DEL_LOGO_AQUI" alt="">
+  </button>
+  <div class="social-menu" id="socialMenu" hidden>
+    <a href="#" target="_blank" class="social-menu-item">📷 Instagram</a>
+    <a href="#" target="_blank" class="social-menu-item">🎵 TikTok</a>
+  </div>
+</div>
+
+<!-- FLYING IMAGE (animación al carrito) -->
+<img id="flyingImg" class="flying-img" hidden>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
+<script src="script.js"></script>
+</body>
+</html>
