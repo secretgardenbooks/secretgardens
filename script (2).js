@@ -4,8 +4,8 @@
 
 // ---------- CONFIGURACIÓN ----------
 const CURRENCY = "$";
-const WHATSAPP = "XXXXXXXXXX"; // <-- reemplazar con el número real (código país + número, sin +)
-const URL_CSV = "TU_URL_DE_GOOGLE_SHEETS_CSV_AQUI"; // <-- reemplazar con el CSV público de Google Sheets
+const WHATSAPP = "+584125713381"; // <-- reemplazar con el número real (código país + número, sin +)
+const URL_CSV = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQAbijRvTOJdr03l9HI8mcbEJzafkUuQX8b81FVIMoVQ6Ba0SLwUA4MLFXeNVLPgjDXZJUeIlHmbxEe/pub?output=csv"; // <-- reemplazar con el CSV público de Google Sheets
 const CART_GOAL = 5; // libros para desbloquear beneficio
 
 const LS_CART = "sgb_cart";
