@@ -4,9 +4,8 @@
 
 // ---------- CONFIGURACIÓN ----------
 const CURRENCY = "$";
-const WHATSAPP = "584125713381"; // <-- reemplazar con el número real (código país + número, sin +)
-const URL_CSV = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQAbijRvTOJdr03l9HI8mcbEJzafkUuQX8b81FVIMoVQ6Ba0SLwUA4MLFXeNVLPgjDXZJUeIlHmbxEe/pub?output=csv"; // <-- reemplazar con el CSV público de Google Sheets
-const CART_GOAL = 5; // libros para desbloquear beneficio
+const WHATSAPP = "XXXXXXXXXX"; // <-- reemplazar con el número real (código país + número, sin +)
+const URL_CSV = "TU_URL_DE_GOOGLE_SHEETS_CSV_AQUI"; // <-- reemplazar con el CSV público de Google Sheets
 
 const LS_CART = "sgb_cart";
 const LS_FAVS = "sgb_favs";
@@ -103,20 +102,42 @@ function debounce(fn, delay) {
 // ============================================================
 // CARGA DE DATOS
 // ============================================================
+// Columnas reales del Google Sheet (en este orden):
+// ID | Titulo | Autor | Genero | Precio | Descripcion | ImagenURL | Stock | Tapa | Badges especiales | carrusel | Descuento %
+function getField(row, ...names) {
+  // Busca la columna sin importar mayúsculas/minúsculas o espacios extra al final del header
+  const keys = Object.keys(row);
+  for (const name of names) {
+    const found = keys.find(k => k.trim().toLowerCase() === name.trim().toLowerCase());
+    if (found !== undefined && row[found] !== undefined) return row[found];
+  }
+  return "";
+}
+
 function normalizeRow(row) {
+  const finalPrice = parseFloat(getField(row, "Precio")) || 0;
+  const discountRaw = getField(row, "Descuento %", "Descuento");
+  const discountPct = parseFloat(String(discountRaw).replace("%", "").replace(",", ".")) || 0;
+  const originalPrice = discountPct > 0 ? finalPrice / (1 - discountPct / 100) : null;
+
+  const stockRaw = String(getField(row, "Stock")).trim().toUpperCase();
+  const inStock = !["NO", "AGOTADO", "0", "FALSE", ""].includes(stockRaw);
+
+  const rankRaw = getField(row, "carrusel", "Carrusel");
+
   return {
-    id: Number(row.id),
-    title: row.title || "",
-    author: row.author || "",
-    price: parseFloat(row.price) || 0,
-    originalPrice: row.originalPrice ? parseFloat(row.originalPrice) : null,
-    cover: row.cover || "Blanda",
-    inStock: (row.inStock || "SI").toString().trim().toUpperCase() === "SI",
-    genres: row.genres || "",
-    badge: row.badge || "",
-    description: row.description || "",
-    img: row.img || "",
-    topRank: row.topRank ? Number(row.topRank) : null,
+    id: Number(getField(row, "ID")),
+    title: getField(row, "Titulo", "Título") || "",
+    author: getField(row, "Autor") || "",
+    price: finalPrice,
+    originalPrice,
+    cover: getField(row, "Tapa") || "Blanda",
+    inStock,
+    genres: getField(row, "Genero", "Género") || "",
+    badge: getField(row, "Badges especiales", "Badge") || "",
+    description: getField(row, "Descripcion", "Descripción") || "",
+    img: getField(row, "ImagenURL", "Imagen URL", "Imagen") || "",
+    topRank: rankRaw ? Number(rankRaw) : null,
   };
 }
 
@@ -551,17 +572,6 @@ function updateCartUI() {
 
   document.getElementById("cartTotal").textContent = money(cartTotal());
   checkoutBtn.disabled = cart.length === 0;
-
-  // Progreso hacia meta
-  const progressFill = document.getElementById("cartProgressFill");
-  const progressLabel = document.getElementById("cartProgressLabel");
-  const pct = Math.min(100, (totalCount / CART_GOAL) * 100);
-  progressFill.style.width = pct + "%";
-  if (totalCount >= CART_GOAL) {
-    progressLabel.textContent = "🎉 ¡Beneficio desbloqueado por cantidad de libros!";
-  } else {
-    progressLabel.textContent = `Añade ${CART_GOAL - totalCount} libro(s) más para desbloquear un beneficio especial.`;
-  }
 }
 
 // Abrir/cerrar carrito
